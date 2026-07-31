@@ -231,6 +231,39 @@
 
   footer{ padding:32px 0; text-align:center; font-size:0.82rem; opacity:0.55;}
 
+  /* QUOTE CALCULATOR */
+  .quote{ padding:72px 0; background:var(--cream-deep);}
+  .quote-box{
+    background:var(--cream); border:1px solid var(--line); border-radius:24px;
+    padding:40px; display:grid; grid-template-columns:1.1fr 0.9fr; gap:40px;
+  }
+  @media(max-width:800px){ .quote-box{ grid-template-columns:1fr; padding:28px 22px;} }
+  .quote-field{ margin-bottom:18px;}
+  .quote-field label{ display:block; font-size:0.85rem; font-weight:600; margin-bottom:8px;}
+  .quote-field input[type="number"], .quote-field select{
+    width:100%; padding:12px 14px; border:1.5px solid var(--line); border-radius:10px;
+    font-family:'Inter',sans-serif; font-size:0.95rem; background:var(--cream); color:var(--charcoal);
+  }
+  .quote-checks{ display:flex; gap:20px; flex-wrap:wrap; margin-bottom:8px;}
+  .quote-check{ display:flex; align-items:center; gap:8px; font-size:0.9rem;}
+  .quote-check input{ width:18px; height:18px;}
+  .quote-btn{
+    background:var(--sage-deep); color:var(--cream); border:none; padding:14px 26px;
+    border-radius:100px; font-weight:700; font-size:0.95rem; cursor:pointer; margin-top:6px;
+  }
+  .quote-result{
+    background:var(--charcoal); border-radius:18px; padding:28px; color:var(--cream);
+    display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center;
+  }
+  .quote-result .amount{ font-family:'Fraunces',serif; font-size:2.4rem; font-weight:700; color:var(--honey); margin:8px 0;}
+  .quote-result .amount-label{ font-size:0.8rem; opacity:0.7; text-transform:uppercase; letter-spacing:0.06em;}
+  .quote-result .disclaimer{ font-size:0.78rem; opacity:0.6; margin-top:14px; line-height:1.5;}
+  .quote-result .quote-wa{
+    margin-top:16px; background:var(--honey); color:var(--charcoal); padding:12px 22px;
+    border-radius:100px; font-weight:700; font-size:0.88rem; display:inline-flex; align-items:center; gap:8px;
+  }
+  .quote-result.empty{ opacity:0.5; font-size:0.9rem;}
+
   /* FLOATING WHATSAPP */
   .float-wa{
     position:fixed; bottom:22px; right:22px; z-index:60;
@@ -256,6 +289,7 @@
     <div class="brand"><img src="logo.png" alt="Shiny Pro LLC"></div>
     <div class="nav-links">
       <a href="#servicios" class="nav-anchor" data-i18n="nav.services">Servicios</a>
+      <a href="#cotizador" class="nav-anchor" data-i18n="nav.quote">Cotizador</a>
       <a href="#galeria" class="nav-anchor" data-i18n="nav.gallery">Galería</a>
       <a href="#resenas" class="nav-anchor" data-i18n="nav.reviews">Reseñas</a>
       <a href="#contacto" class="nav-anchor" data-i18n="nav.contact">Contacto</a>
@@ -366,6 +400,46 @@
           <div class="photo-ph"><img src="despues-sala.jpg" alt="" onerror="this.style.display='none'"><span class="ph-label" data-i18n="ph.after">Después</span></div>
         </div>
         <div class="gallery-pair-label" data-i18n="gallery.item3">Sala — post-construcción</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="quote" id="cotizador">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow" data-i18n="quote.eyebrow">Estima tu precio</span>
+      <h2 data-i18n="quote.title">Calcula tu cotización al instante</h2>
+    </div>
+    <div class="quote-box">
+      <div>
+        <div class="quote-field">
+          <label data-i18n="quote.sqft">Tamaño de la propiedad (pies cuadrados)</label>
+          <input type="number" id="q-sqft" placeholder="Ej. 1800" min="0">
+        </div>
+        <div class="quote-field">
+          <label data-i18n="quote.service">Tipo de servicio</label>
+          <select id="q-service">
+            <option value="residencial" data-i18n="s1.title">Limpieza Residencial Regular</option>
+            <option value="profunda" data-i18n="s2.title">Limpieza Profunda</option>
+            <option value="mudanza" data-i18n="s3.title">Limpieza de Mudanza</option>
+            <option value="comercial" data-i18n="s4.title">Limpieza Comercial y de Oficinas</option>
+            <option value="airbnb" data-i18n="s5.title">Casas de Renta y Airbnb</option>
+            <option value="construccion" data-i18n="s6.title">Limpieza Post-Construcción</option>
+          </select>
+        </div>
+        <div class="quote-field">
+          <label data-i18n="quote.bathrooms">Baños extra (más allá del estándar)</label>
+          <input type="number" id="q-bathrooms" placeholder="0" min="0" value="0">
+        </div>
+        <div class="quote-checks">
+          <label class="quote-check"><input type="checkbox" id="q-oven"> <span data-i18n="quote.oven">Limpieza de horno</span></label>
+          <label class="quote-check"><input type="checkbox" id="q-pets"> <span data-i18n="quote.pets">Tiene mascotas</span></label>
+        </div>
+        <button class="quote-btn" onclick="calcQuote()" data-i18n="quote.calc">Calcular estimado</button>
+      </div>
+      <div class="quote-result empty" id="q-result">
+        <span data-i18n="quote.placeholder">Completa los datos para ver tu estimado</span>
       </div>
     </div>
   </div>
@@ -492,6 +566,7 @@
 const translations = {
   es: {
     "nav.services":"Servicios", "nav.gallery":"Galería", "nav.reviews":"Reseñas", "nav.contact":"Contacto",
+    "nav.quote":"Cotizador",
     "trust.1":"Licenciado y Asegurado", "trust.2":"Bradenton · Sarasota · Lakewood Ranch", "trust.3":"Cotización en 24 horas",
     "hero.title":"Tu espacio, nuestra pasión",
     "hero.slogan":"Resultados impecables cada vez.",
@@ -509,7 +584,13 @@ const translations = {
     "s5.title":"Casas de Renta y Airbnb", "s5.desc":"Turnovers rápidos entre huéspedes, listos para tu próxima reserva.",
     "s6.title":"Limpieza Post-Construcción", "s6.desc":"Remoción de polvo fino y residuos tras una remodelación.",
     "gallery.eyebrow":"Resultados reales", "gallery.title":"Antes y después",
-    "gallery.item1":"Cocina — limpieza profunda", "gallery.item2":"Baño — turnover Airbnb", "gallery.item3":"Sala — post-construcción",
+    "gallery.item1":"Cocina", "gallery.item2":"Baño", "gallery.item3":"Sala",
+    "quote.eyebrow":"Estima tu precio", "quote.title":"Calcula tu cotización al instante",
+    "quote.sqft":"Tamaño de la propiedad (pies cuadrados)", "quote.service":"Tipo de servicio",
+    "quote.bathrooms":"Baños extra (más allá del estándar)", "quote.oven":"Limpieza de horno", "quote.pets":"Tiene mascotas",
+    "quote.calc":"Calcular estimado", "quote.placeholder":"Completa los datos para ver tu estimado",
+    "quote.estimate":"Estimado aproximado", "quote.wa":"Confirmar por WhatsApp",
+    "quote.disclaimer":"Este es un estimado automático basado en pies cuadrados. El precio final se confirma tras revisar la propiedad.",
     "why.eyebrow":"Por qué Shiny Pro", "why.title":"Confianza construida limpieza tras limpieza",
     "why1.title":"Equipo verificado", "why1.desc":"Mismo personal capacitado, no subcontratistas al azar.",
     "why2.title":"Productos de calidad", "why2.desc":"Insumos profesionales, seguros para niños y mascotas.",
@@ -531,6 +612,7 @@ const translations = {
   },
   en: {
     "nav.services":"Services", "nav.gallery":"Gallery", "nav.reviews":"Reviews", "nav.contact":"Contact",
+    "nav.quote":"Get a Quote",
     "trust.1":"Licensed & Insured", "trust.2":"Bradenton · Sarasota · Lakewood Ranch", "trust.3":"24-hour quote turnaround",
     "hero.title":"Your Space, Our Passion",
     "hero.slogan":"Sparkling results every time.",
@@ -548,7 +630,13 @@ const translations = {
     "s5.title":"Vacation Rental & Airbnb Turnover", "s5.desc":"Fast turnovers between guests, ready for your next booking.",
     "s6.title":"Post-Construction Cleaning", "s6.desc":"Fine dust and debris removal after a remodel.",
     "gallery.eyebrow":"Real results", "gallery.title":"Before & after",
-    "gallery.item1":"Kitchen — deep clean", "gallery.item2":"Bathroom — Airbnb turnover", "gallery.item3":"Living room — post-construction",
+    "gallery.item1":"Kitchen", "gallery.item2":"Bathroom", "gallery.item3":"Living room",
+    "quote.eyebrow":"Estimate your price", "quote.title":"Calculate your quote instantly",
+    "quote.sqft":"Property size (square feet)", "quote.service":"Type of service",
+    "quote.bathrooms":"Extra bathrooms (beyond standard)", "quote.oven":"Oven cleaning", "quote.pets":"Has pets",
+    "quote.calc":"Calculate estimate", "quote.placeholder":"Fill in the details to see your estimate",
+    "quote.estimate":"Approximate estimate", "quote.wa":"Confirm on WhatsApp",
+    "quote.disclaimer":"This is an automatic estimate based on square footage. Final price is confirmed after a property review.",
     "why.eyebrow":"Why Shiny Pro", "why.title":"Trust built one clean at a time",
     "why1.title":"Verified team", "why1.desc":"Same trained staff, never random subcontractors.",
     "why2.title":"Quality products", "why2.desc":"Professional supplies, safe for kids and pets.",
@@ -586,6 +674,51 @@ function setLang(lang){
 }
 function toggleFaq(el){
   el.parentElement.classList.toggle('open');
+}
+
+const RATE_PER_SQFT = 0.20;
+const EXTRA_CHARGE = 10;
+const MIN_FEE = 140;
+const serviceNames = { es:{residencial:"Limpieza Residencial",profunda:"Limpieza Profunda",mudanza:"Limpieza de Mudanza",comercial:"Limpieza Comercial",airbnb:"Airbnb/Renta",construccion:"Post-Construcción"},
+                        en:{residencial:"Residential Cleaning",profunda:"Deep Cleaning",mudanza:"Move-In/Out",comercial:"Commercial Cleaning",airbnb:"Airbnb/Rental",construccion:"Post-Construction"} };
+
+function calcQuote(){
+  const sqft = parseFloat(document.getElementById('q-sqft').value) || 0;
+  const service = document.getElementById('q-service').value;
+  const bathrooms = parseInt(document.getElementById('q-bathrooms').value) || 0;
+  const oven = document.getElementById('q-oven').checked;
+  const pets = document.getElementById('q-pets').checked;
+
+  const resultEl = document.getElementById('q-result');
+  if(sqft <= 0){
+    resultEl.classList.add('empty');
+    resultEl.innerHTML = `<span>${translations[currentLang]['quote.placeholder']}</span>`;
+    return;
+  }
+
+  let base = sqft * RATE_PER_SQFT;
+  let extras = (bathrooms * EXTRA_CHARGE) + (oven ? EXTRA_CHARGE : 0) + (pets ? EXTRA_CHARGE : 0);
+  let total = Math.max(base + extras, MIN_FEE);
+  let low = Math.round((total * 0.92) / 5) * 5;
+  let high = Math.round((total * 1.12) / 5) * 5;
+
+  resultEl.classList.remove('empty');
+  const amountLabel = translations[currentLang]['quote.estimate'];
+  const disclaimer = translations[currentLang]['quote.disclaimer'];
+  const waLabel = translations[currentLang]['quote.wa'];
+  const svcName = serviceNames[currentLang][service];
+
+  const msgLines = currentLang === 'es'
+    ? `Hola! Quiero cotizar: ${svcName}, ${sqft} sq ft, ${bathrooms} baño(s) extra${oven?', horno':''}${pets?', mascotas':''}. Estimado del sitio: $${low}-$${high}.`
+    : `Hi! I'd like a quote: ${svcName}, ${sqft} sq ft, ${bathrooms} extra bathroom(s)${oven?', oven':''}${pets?', pets':''}. Site estimate: $${low}-$${high}.`;
+  const waLink = `https://wa.me/19412501415?text=${encodeURIComponent(msgLines)}`;
+
+  resultEl.innerHTML = `
+    <span class="amount-label">${amountLabel}</span>
+    <span class="amount">$${low} – $${high}</span>
+    <span class="disclaimer">${disclaimer}</span>
+    <a href="${waLink}" target="_blank" class="quote-wa">💬 ${waLabel}</a>
+  `;
 }
 </script>
 
