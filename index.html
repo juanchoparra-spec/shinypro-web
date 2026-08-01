@@ -435,6 +435,10 @@
             <option value="dirty" data-i18n="quote.condition.dirty">Mugre acumulada (6+ meses sin limpieza profunda)</option>
           </select>
         </div>
+        <div class="quote-field">
+          <label data-i18n="quote.bathrooms">Baños extra (más de lo típico para el tamaño)</label>
+          <input type="number" id="q-bathrooms" placeholder="0" min="0" value="0">
+        </div>
         <div class="quote-checks">
           <label class="quote-check"><input type="checkbox" id="q-oven"> <span data-i18n="quote.oven">Interior de horno</span></label>
           <label class="quote-check"><input type="checkbox" id="q-fridge"> <span data-i18n="quote.fridge">Interior de refrigerador</span></label>
@@ -597,6 +601,7 @@ const translations = {
     "quote.eyebrow":"Estima tu precio", "quote.title":"Calcula tu cotización al instante",
     "quote.sqft":"Tamaño de la propiedad (pies cuadrados)", "quote.service":"Tipo de servicio",
     "quote.condition":"Estado de la propiedad", "quote.condition.normal":"Mantenimiento normal", "quote.condition.dirty":"Mugre acumulada (6+ meses sin limpieza profunda)",
+    "quote.bathrooms":"Baños extra (más de lo típico para el tamaño)",
     "quote.oven":"Interior de horno", "quote.fridge":"Interior de refrigerador", "quote.cabinets":"Interior de gabinetes", "quote.pets":"Mascotas (pelo abundante)",
     "quote.windows":"Ventanas interiores a limpiar (opcional)",
     "quote.calc":"Calcular estimado", "quote.placeholder":"Completa los datos para ver tu estimado",
@@ -645,6 +650,7 @@ const translations = {
     "quote.eyebrow":"Estimate your price", "quote.title":"Calculate your quote instantly",
     "quote.sqft":"Property size (square feet)", "quote.service":"Type of service",
     "quote.condition":"Property condition", "quote.condition.normal":"Regular maintenance", "quote.condition.dirty":"Heavy buildup (6+ months without deep cleaning)",
+    "quote.bathrooms":"Extra bathrooms (more than typical for the size)",
     "quote.oven":"Interior of oven", "quote.fridge":"Interior of refrigerator", "quote.cabinets":"Interior of cabinets", "quote.pets":"Pets (heavy shedding)",
     "quote.windows":"Interior windows to clean (optional)",
     "quote.calc":"Calculate estimate", "quote.placeholder":"Fill in the details to see your estimate",
@@ -699,7 +705,7 @@ const SERVICE_RATES = {
   construccion:  {low:0.30, high:0.50}
 };
 const MIN_FEE = 135;
-const ADDON = { oven:42, fridge:40, cabinets:55, pets:40, windowUnit:7 };
+const ADDON = { oven:42, fridge:40, cabinets:55, pets:40, windowUnit:7, bathroom:30 };
 const serviceNames = { es:{residencial:"Limpieza Residencial",profunda:"Limpieza Profunda",mudanza:"Limpieza de Mudanza",comercial:"Limpieza Comercial",airbnb:"Airbnb/Renta",construccion:"Post-Construcción"},
                         en:{residencial:"Residential Cleaning",profunda:"Deep Cleaning",mudanza:"Move-In/Out",comercial:"Commercial Cleaning",airbnb:"Airbnb/Rental",construccion:"Post-Construction"} };
 
@@ -707,6 +713,7 @@ function calcQuote(){
   const sqft = parseFloat(document.getElementById('q-sqft').value) || 0;
   const service = document.getElementById('q-service').value;
   const dirty = document.getElementById('q-condition').value === 'dirty';
+  const bathrooms = parseInt(document.getElementById('q-bathrooms').value) || 0;
   const oven = document.getElementById('q-oven').checked;
   const fridge = document.getElementById('q-fridge').checked;
   const cabinets = document.getElementById('q-cabinets').checked;
@@ -724,7 +731,7 @@ function calcQuote(){
   // Si tiene más de 6 meses de mugre acumulada, aplica el rango máximo de la tarifa
   const effectiveRate = dirty ? rate.high : rate.low;
   let base = sqft * effectiveRate;
-  let addons = (oven?ADDON.oven:0) + (fridge?ADDON.fridge:0) + (cabinets?ADDON.cabinets:0) + (pets?ADDON.pets:0) + (windows*ADDON.windowUnit);
+  let addons = (bathrooms*ADDON.bathroom) + (oven?ADDON.oven:0) + (fridge?ADDON.fridge:0) + (cabinets?ADDON.cabinets:0) + (pets?ADDON.pets:0) + (windows*ADDON.windowUnit);
   let total = Math.max(base + addons, MIN_FEE);
 
   // Rango de estimado: usa la tarifa baja y alta del servicio como piso/techo
@@ -746,9 +753,11 @@ function calcQuote(){
     windows>0 ? (currentLang==='es'?`${windows} ventana(s)`:`${windows} window(s)`) : null
   ].filter(Boolean).join(', ');
 
+  const bathroomsTxt = bathrooms>0 ? (currentLang==='es'?`${bathrooms} baño(s) extra`:`${bathrooms} extra bathroom(s)`) : null;
+  const fullExtras = [bathroomsTxt, extrasList||null].filter(Boolean).join(', ');
   const msgLines = currentLang === 'es'
-    ? `Hola! Quiero cotizar: ${svcName}, ${sqft} sq ft${dirty?' (mugre acumulada)':''}${extrasList?', extras: '+extrasList:''}. Estimado del sitio: $${low}-$${high}.`
-    : `Hi! I'd like a quote: ${svcName}, ${sqft} sq ft${dirty?' (heavy buildup)':''}${extrasList?', extras: '+extrasList:''}. Site estimate: $${low}-$${high}.`;
+    ? `Hola! Quiero cotizar: ${svcName}, ${sqft} sq ft${dirty?' (mugre acumulada)':''}${fullExtras?', extras: '+fullExtras:''}. Estimado del sitio: $${low}-$${high}.`
+    : `Hi! I'd like a quote: ${svcName}, ${sqft} sq ft${dirty?' (heavy buildup)':''}${fullExtras?', extras: '+fullExtras:''}. Site estimate: $${low}-$${high}.`;
   const waLink = `https://wa.me/19412501415?text=${encodeURIComponent(msgLines)}`;
 
   resultEl.innerHTML = `
