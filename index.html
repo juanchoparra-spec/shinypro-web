@@ -429,12 +429,21 @@
           </select>
         </div>
         <div class="quote-field">
-          <label data-i18n="quote.bathrooms">Baños extra (más allá del estándar)</label>
-          <input type="number" id="q-bathrooms" placeholder="0" min="0" value="0">
+          <label data-i18n="quote.condition">Estado de la propiedad</label>
+          <select id="q-condition">
+            <option value="normal" data-i18n="quote.condition.normal">Mantenimiento normal</option>
+            <option value="dirty" data-i18n="quote.condition.dirty">Mugre acumulada (6+ meses sin limpieza profunda)</option>
+          </select>
         </div>
         <div class="quote-checks">
-          <label class="quote-check"><input type="checkbox" id="q-oven"> <span data-i18n="quote.oven">Limpieza de horno</span></label>
-          <label class="quote-check"><input type="checkbox" id="q-pets"> <span data-i18n="quote.pets">Tiene mascotas</span></label>
+          <label class="quote-check"><input type="checkbox" id="q-oven"> <span data-i18n="quote.oven">Interior de horno</span></label>
+          <label class="quote-check"><input type="checkbox" id="q-fridge"> <span data-i18n="quote.fridge">Interior de refrigerador</span></label>
+          <label class="quote-check"><input type="checkbox" id="q-cabinets"> <span data-i18n="quote.cabinets">Interior de gabinetes</span></label>
+          <label class="quote-check"><input type="checkbox" id="q-pets"> <span data-i18n="quote.pets">Mascotas (pelo abundante)</span></label>
+        </div>
+        <div class="quote-field">
+          <label data-i18n="quote.windows">Ventanas interiores a limpiar (opcional)</label>
+          <input type="number" id="q-windows" placeholder="0" min="0" value="0">
         </div>
         <button class="quote-btn" onclick="calcQuote()" data-i18n="quote.calc">Calcular estimado</button>
       </div>
@@ -587,7 +596,9 @@ const translations = {
     "gallery.item1":"Cocina", "gallery.item2":"Baño", "gallery.item3":"Sala",
     "quote.eyebrow":"Estima tu precio", "quote.title":"Calcula tu cotización al instante",
     "quote.sqft":"Tamaño de la propiedad (pies cuadrados)", "quote.service":"Tipo de servicio",
-    "quote.bathrooms":"Baños extra (más allá del estándar)", "quote.oven":"Limpieza de horno", "quote.pets":"Tiene mascotas",
+    "quote.condition":"Estado de la propiedad", "quote.condition.normal":"Mantenimiento normal", "quote.condition.dirty":"Mugre acumulada (6+ meses sin limpieza profunda)",
+    "quote.oven":"Interior de horno", "quote.fridge":"Interior de refrigerador", "quote.cabinets":"Interior de gabinetes", "quote.pets":"Mascotas (pelo abundante)",
+    "quote.windows":"Ventanas interiores a limpiar (opcional)",
     "quote.calc":"Calcular estimado", "quote.placeholder":"Completa los datos para ver tu estimado",
     "quote.estimate":"Estimado aproximado", "quote.wa":"Confirmar por WhatsApp",
     "quote.disclaimer":"Este es un estimado automático basado en pies cuadrados. El precio final se confirma tras revisar la propiedad.",
@@ -633,7 +644,9 @@ const translations = {
     "gallery.item1":"Kitchen", "gallery.item2":"Bathroom", "gallery.item3":"Living room",
     "quote.eyebrow":"Estimate your price", "quote.title":"Calculate your quote instantly",
     "quote.sqft":"Property size (square feet)", "quote.service":"Type of service",
-    "quote.bathrooms":"Extra bathrooms (beyond standard)", "quote.oven":"Oven cleaning", "quote.pets":"Has pets",
+    "quote.condition":"Property condition", "quote.condition.normal":"Regular maintenance", "quote.condition.dirty":"Heavy buildup (6+ months without deep cleaning)",
+    "quote.oven":"Interior of oven", "quote.fridge":"Interior of refrigerator", "quote.cabinets":"Interior of cabinets", "quote.pets":"Pets (heavy shedding)",
+    "quote.windows":"Interior windows to clean (optional)",
     "quote.calc":"Calculate estimate", "quote.placeholder":"Fill in the details to see your estimate",
     "quote.estimate":"Approximate estimate", "quote.wa":"Confirm on WhatsApp",
     "quote.disclaimer":"This is an automatic estimate based on square footage. Final price is confirmed after a property review.",
@@ -676,18 +689,29 @@ function toggleFaq(el){
   el.parentElement.classList.toggle('open');
 }
 
-const RATE_PER_SQFT = 0.20;
-const EXTRA_CHARGE = 10;
-const MIN_FEE = 140;
+// Tarifas oficiales por sq ft (rango bajo-alto) según tabla Shiny Pro
+const SERVICE_RATES = {
+  residencial:   {low:0.08, high:0.14},
+  profunda:      {low:0.18, high:0.25},
+  mudanza:       {low:0.22, high:0.32},
+  comercial:     {low:0.09, high:0.16},
+  airbnb:        {low:0.12, high:0.20},
+  construccion:  {low:0.30, high:0.50}
+};
+const MIN_FEE = 135;
+const ADDON = { oven:42, fridge:40, cabinets:55, pets:40, windowUnit:7 };
 const serviceNames = { es:{residencial:"Limpieza Residencial",profunda:"Limpieza Profunda",mudanza:"Limpieza de Mudanza",comercial:"Limpieza Comercial",airbnb:"Airbnb/Renta",construccion:"Post-Construcción"},
                         en:{residencial:"Residential Cleaning",profunda:"Deep Cleaning",mudanza:"Move-In/Out",comercial:"Commercial Cleaning",airbnb:"Airbnb/Rental",construccion:"Post-Construction"} };
 
 function calcQuote(){
   const sqft = parseFloat(document.getElementById('q-sqft').value) || 0;
   const service = document.getElementById('q-service').value;
-  const bathrooms = parseInt(document.getElementById('q-bathrooms').value) || 0;
+  const dirty = document.getElementById('q-condition').value === 'dirty';
   const oven = document.getElementById('q-oven').checked;
+  const fridge = document.getElementById('q-fridge').checked;
+  const cabinets = document.getElementById('q-cabinets').checked;
   const pets = document.getElementById('q-pets').checked;
+  const windows = parseInt(document.getElementById('q-windows').value) || 0;
 
   const resultEl = document.getElementById('q-result');
   if(sqft <= 0){
@@ -696,11 +720,17 @@ function calcQuote(){
     return;
   }
 
-  let base = sqft * RATE_PER_SQFT;
-  let extras = (bathrooms * EXTRA_CHARGE) + (oven ? EXTRA_CHARGE : 0) + (pets ? EXTRA_CHARGE : 0);
-  let total = Math.max(base + extras, MIN_FEE);
-  let low = Math.round((total * 0.92) / 5) * 5;
-  let high = Math.round((total * 1.12) / 5) * 5;
+  const rate = SERVICE_RATES[service];
+  // Si tiene más de 6 meses de mugre acumulada, aplica el rango máximo de la tarifa
+  const effectiveRate = dirty ? rate.high : rate.low;
+  let base = sqft * effectiveRate;
+  let addons = (oven?ADDON.oven:0) + (fridge?ADDON.fridge:0) + (cabinets?ADDON.cabinets:0) + (pets?ADDON.pets:0) + (windows*ADDON.windowUnit);
+  let total = Math.max(base + addons, MIN_FEE);
+
+  // Rango de estimado: usa la tarifa baja y alta del servicio como piso/techo
+  let low = Math.max(Math.round(((sqft*rate.low)+addons)/5)*5, MIN_FEE);
+  let high = Math.round(((sqft*rate.high)+addons)/5)*5;
+  if(high < low) high = low + 20;
 
   resultEl.classList.remove('empty');
   const amountLabel = translations[currentLang]['quote.estimate'];
@@ -708,9 +738,17 @@ function calcQuote(){
   const waLabel = translations[currentLang]['quote.wa'];
   const svcName = serviceNames[currentLang][service];
 
+  const extrasList = [
+    oven ? (currentLang==='es'?'horno':'oven') : null,
+    fridge ? (currentLang==='es'?'refrigerador':'fridge') : null,
+    cabinets ? (currentLang==='es'?'gabinetes':'cabinets') : null,
+    pets ? (currentLang==='es'?'mascotas':'pets') : null,
+    windows>0 ? (currentLang==='es'?`${windows} ventana(s)`:`${windows} window(s)`) : null
+  ].filter(Boolean).join(', ');
+
   const msgLines = currentLang === 'es'
-    ? `Hola! Quiero cotizar: ${svcName}, ${sqft} sq ft, ${bathrooms} baño(s) extra${oven?', horno':''}${pets?', mascotas':''}. Estimado del sitio: $${low}-$${high}.`
-    : `Hi! I'd like a quote: ${svcName}, ${sqft} sq ft, ${bathrooms} extra bathroom(s)${oven?', oven':''}${pets?', pets':''}. Site estimate: $${low}-$${high}.`;
+    ? `Hola! Quiero cotizar: ${svcName}, ${sqft} sq ft${dirty?' (mugre acumulada)':''}${extrasList?', extras: '+extrasList:''}. Estimado del sitio: $${low}-$${high}.`
+    : `Hi! I'd like a quote: ${svcName}, ${sqft} sq ft${dirty?' (heavy buildup)':''}${extrasList?', extras: '+extrasList:''}. Site estimate: $${low}-$${high}.`;
   const waLink = `https://wa.me/19412501415?text=${encodeURIComponent(msgLines)}`;
 
   resultEl.innerHTML = `
