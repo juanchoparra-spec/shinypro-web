@@ -244,12 +244,12 @@
 
   /* LIGHTBOX */
   .lightbox{
-    display:none; position:fixed; inset:0; z-index:200;
-    background:rgba(10,20,32,0.92); align-items:center; justify-content:center;
-    padding:24px;
+    display:none; position:fixed; inset:0; z-index:9999;
+    background:#0A1420; align-items:center; justify-content:center;
+    padding:24px; opacity:1;
   }
   .lightbox.open{ display:flex;}
-  .lightbox-img{ max-width:90vw; max-height:82vh; object-fit:contain; border-radius:10px; box-shadow:0 20px 60px rgba(0,0,0,0.4);}
+  .lightbox-img{ max-width:90vw; max-height:82vh; object-fit:contain; border-radius:10px; box-shadow:0 20px 60px rgba(0,0,0,0.6); opacity:1; background:#0A1420;}
   .lightbox-close{
     position:absolute; top:20px; right:24px; background:rgba(255,255,255,0.12); border:none; color:#fff;
     width:42px; height:42px; border-radius:50%; font-size:1.2rem; cursor:pointer;
@@ -586,6 +586,8 @@
 
 <footer>
   © 2026 Shiny Pro LLC · Bradenton, FL · shinyprofl.com
+</footer>
+
 <div class="lightbox" id="lightbox" onclick="if(event.target===this) closeLightbox()">
   <button class="lightbox-close" onclick="closeLightbox()" aria-label="Close">✕</button>
   <button class="lightbox-nav lightbox-prev" onclick="navLightbox(-1)" aria-label="Previous">‹</button>
@@ -593,8 +595,6 @@
   <button class="lightbox-nav lightbox-next" onclick="navLightbox(1)" aria-label="Next">›</button>
   <div class="lightbox-counter" id="lightbox-counter"></div>
 </div>
-
-</footer>
 
 <a href="https://wa.me/19412501415" class="float-wa" target="_blank" aria-label="WhatsApp">💬</a>
 
