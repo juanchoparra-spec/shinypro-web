@@ -40,7 +40,7 @@
     position:relative; overflow:hidden; padding:12px;
   }
   .photo-ph img{
-    position:absolute; inset:0; width:100%; height:100%; object-fit:cover;
+    position:absolute; inset:0; width:100%; height:100%; object-fit:cover; cursor:pointer;
   }
   .photo-ph .ph-label{ position:relative; z-index:1;}
 
@@ -163,12 +163,13 @@
 
   /* GALLERY */
   .gallery{ padding:72px 0;}
-  .gallery-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:20px;}
+  .gallery-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:20px; align-items:start;}
   @media(max-width:860px){ .gallery-grid{ grid-template-columns:1fr;} }
   .gallery-card{ border-radius:18px; overflow:hidden; border:1px solid var(--line); background:var(--cream);}
   .gallery-card-imgs{ display:flex; flex-wrap:wrap; gap:2px; background:var(--line);}
-  .gallery-card-imgs img{ flex:1 1 calc(50% - 1px); min-width:150px; height:170px; object-fit:cover; display:block; background:var(--cream-deep);}
-  .gallery-card-imgs.single img{ flex:1 1 100%;}
+  .gallery-card-imgs img{ flex:1 1 calc(50% - 1px); min-width:150px; height:170px; object-fit:cover; display:block; background:var(--cream-deep); cursor:pointer; transition:opacity .15s;}
+  .gallery-card-imgs img:hover{ opacity:0.85;}
+  .gallery-card-imgs.single img{ flex:1 1 100%; height:170px;}
   .gallery-card-label{ padding:12px 16px; font-size:0.9rem; font-weight:600; text-align:center;}
   .gallery-empty{ text-align:center; padding:40px 20px; opacity:0.55; font-size:0.9rem; border:1.5px dashed var(--line); border-radius:16px;}
   .gallery-empty.hidden{ display:none;}
@@ -240,6 +241,27 @@
   }
 
   footer{ padding:32px 0; text-align:center; font-size:0.82rem; opacity:0.55;}
+
+  /* LIGHTBOX */
+  .lightbox{
+    display:none; position:fixed; inset:0; z-index:200;
+    background:rgba(10,20,32,0.92); align-items:center; justify-content:center;
+    padding:24px;
+  }
+  .lightbox.open{ display:flex;}
+  .lightbox-img{ max-width:90vw; max-height:82vh; object-fit:contain; border-radius:10px; box-shadow:0 20px 60px rgba(0,0,0,0.4);}
+  .lightbox-close{
+    position:absolute; top:20px; right:24px; background:rgba(255,255,255,0.12); border:none; color:#fff;
+    width:42px; height:42px; border-radius:50%; font-size:1.2rem; cursor:pointer;
+  }
+  .lightbox-nav{
+    position:absolute; top:50%; transform:translateY(-50%); background:rgba(255,255,255,0.12); border:none; color:#fff;
+    width:48px; height:48px; border-radius:50%; font-size:1.8rem; cursor:pointer; display:flex; align-items:center; justify-content:center;
+  }
+  .lightbox-prev{ left:16px;}
+  .lightbox-next{ right:16px;}
+  .lightbox-counter{ position:absolute; bottom:22px; left:50%; transform:translateX(-50%); color:rgba(255,255,255,0.7); font-size:0.82rem;}
+  @media(max-width:600px){ .lightbox-nav{ width:40px; height:40px; font-size:1.4rem;} }
 
   /* QUOTE CALCULATOR */
   .quote{ padding:72px 0; background:var(--cream-deep);}
@@ -332,7 +354,7 @@
           <div><strong>24h</strong> <span data-i18n="strip.3">Respuesta a cotizaciones</span></div>
         </div>
       </div>
-      <div class="photo-ph hero-photo"><img src="hero.jpg" alt="" onerror="this.style.display='none'"><span class="ph-label" data-i18n="ph.hero">Foto real del equipo / trabajo terminado (vertical, 4:5)</span></div>
+      <div class="photo-ph hero-photo"><img src="hero.jpg" alt="" onerror="this.style.display='none'" onload="this.style.cursor='pointer'" onclick="openLightbox(['hero.jpg'],0)"><span class="ph-label" data-i18n="ph.hero">Foto real del equipo / trabajo terminado (vertical, 4:5)</span></div>
     </div>
   </div>
 </section>
@@ -345,37 +367,37 @@
     </div>
     <div class="service-grid">
       <div class="service-card">
-        <div class="photo-ph"><img src="servicio-residencial.jpg" alt="" onerror="this.style.display='none'"><span class="ph-label" data-i18n="ph.card">Foto</span></div>
+        <div class="photo-ph"><img src="servicio-residencial.jpg" alt="" onerror="this.style.display='none'" onload="this.style.cursor='pointer'" onclick="openLightbox(['servicio-residencial.jpg'],0)"><span class="ph-label" data-i18n="ph.card">Foto</span></div>
         <div class="service-card-body"><div class="icon">🏠</div>
         <h3 data-i18n="s1.title">Limpieza Residencial Regular</h3>
         <p data-i18n="s1.desc">Limpieza recurrente para tu casa — semanal, quincenal o mensual.</p></div>
       </div>
       <div class="service-card">
-        <div class="photo-ph"><img src="servicio-profunda.jpg" alt="" onerror="this.style.display='none'"><span class="ph-label" data-i18n="ph.card">Foto</span></div>
+        <div class="photo-ph"><img src="servicio-profunda.jpg" alt="" onerror="this.style.display='none'" onload="this.style.cursor='pointer'" onclick="openLightbox(['servicio-profunda.jpg'],0)"><span class="ph-label" data-i18n="ph.card">Foto</span></div>
         <div class="service-card-body"><div class="icon">✨</div>
         <h3 data-i18n="s2.title">Limpieza Profunda</h3>
         <p data-i18n="s2.desc">Deep cleaning detallado en cada rincón, ideal antes de un evento o por temporada.</p></div>
       </div>
       <div class="service-card">
-        <div class="photo-ph"><img src="servicio-mudanza.jpg" alt="" onerror="this.style.display='none'"><span class="ph-label" data-i18n="ph.card">Foto</span></div>
+        <div class="photo-ph"><img src="servicio-mudanza.jpg" alt="" onerror="this.style.display='none'" onload="this.style.cursor='pointer'" onclick="openLightbox(['servicio-mudanza.jpg'],0)"><span class="ph-label" data-i18n="ph.card">Foto</span></div>
         <div class="service-card-body"><div class="icon">📦</div>
         <h3 data-i18n="s3.title">Limpieza de Mudanza</h3>
         <p data-i18n="s3.desc">Move-in / move-out — propiedad impecable antes de entrar o al salir.</p></div>
       </div>
       <div class="service-card">
-        <div class="photo-ph"><img src="servicio-comercial.jpg" alt="" onerror="this.style.display='none'"><span class="ph-label" data-i18n="ph.card">Foto</span></div>
+        <div class="photo-ph"><img src="servicio-comercial.jpg" alt="" onerror="this.style.display='none'" onload="this.style.cursor='pointer'" onclick="openLightbox(['servicio-comercial.jpg'],0)"><span class="ph-label" data-i18n="ph.card">Foto</span></div>
         <div class="service-card-body"><div class="icon">🏢</div>
         <h3 data-i18n="s4.title">Limpieza Comercial y de Oficinas</h3>
         <p data-i18n="s4.desc">Espacios de trabajo limpios y presentables para tu equipo y clientes.</p></div>
       </div>
       <div class="service-card">
-        <div class="photo-ph"><img src="servicio-airbnb.jpg" alt="" onerror="this.style.display='none'"><span class="ph-label" data-i18n="ph.card">Foto</span></div>
+        <div class="photo-ph"><img src="servicio-airbnb.jpg" alt="" onerror="this.style.display='none'" onload="this.style.cursor='pointer'" onclick="openLightbox(['servicio-airbnb.jpg'],0)"><span class="ph-label" data-i18n="ph.card">Foto</span></div>
         <div class="service-card-body"><div class="icon">🔑</div>
         <h3 data-i18n="s5.title">Casas de Renta y Airbnb</h3>
         <p data-i18n="s5.desc">Turnovers rápidos entre huéspedes, listos para tu próxima reserva.</p></div>
       </div>
       <div class="service-card">
-        <div class="photo-ph"><img src="servicio-construccion.jpg" alt="" onerror="this.style.display='none'"><span class="ph-label" data-i18n="ph.card">Foto</span></div>
+        <div class="photo-ph"><img src="servicio-construccion.jpg" alt="" onerror="this.style.display='none'" onload="this.style.cursor='pointer'" onclick="openLightbox(['servicio-construccion.jpg'],0)"><span class="ph-label" data-i18n="ph.card">Foto</span></div>
         <div class="service-card-body"><div class="icon">🧱</div>
         <h3 data-i18n="s6.title">Limpieza Post-Construcción</h3>
         <p data-i18n="s6.desc">Remoción de polvo fino y residuos tras una remodelación.</p></div>
@@ -472,7 +494,7 @@
           </div>
         </div>
       </div>
-      <div class="photo-ph why-visual"><img src="equipo.jpg" alt="" onerror="this.style.display='none'"><span class="ph-label" data-i18n="ph.team">Foto del equipo Shiny Pro</span></div>
+      <div class="photo-ph why-visual"><img src="equipo.jpg" alt="" onerror="this.style.display='none'" onload="this.style.cursor='pointer'" onclick="openLightbox(['equipo.jpg'],0)"><span class="ph-label" data-i18n="ph.team">Foto del equipo Shiny Pro</span></div>
     </div>
   </div>
 </section>
@@ -564,6 +586,14 @@
 
 <footer>
   © 2026 Shiny Pro LLC · Bradenton, FL · shinyprofl.com
+<div class="lightbox" id="lightbox" onclick="if(event.target===this) closeLightbox()">
+  <button class="lightbox-close" onclick="closeLightbox()" aria-label="Close">✕</button>
+  <button class="lightbox-nav lightbox-prev" onclick="navLightbox(-1)" aria-label="Previous">‹</button>
+  <img class="lightbox-img" id="lightbox-img" src="" alt="">
+  <button class="lightbox-nav lightbox-next" onclick="navLightbox(1)" aria-label="Next">›</button>
+  <div class="lightbox-counter" id="lightbox-counter"></div>
+</div>
+
 </footer>
 
 <a href="https://wa.me/19412501415" class="float-wa" target="_blank" aria-label="WhatsApp">💬</a>
@@ -742,10 +772,12 @@ function buildGallery(){
       card.className = 'gallery-card';
       const imgsWrap = document.createElement('div');
       imgsWrap.className = 'gallery-card-imgs' + (srcs.length === 1 ? ' single' : '');
-      srcs.slice(0,6).forEach(s => {
+      const shownSrcs = srcs.slice(0,6);
+      shownSrcs.forEach((s, idx) => {
         const img = document.createElement('img');
         img.src = s;
         img.alt = galleryLabels[currentLang][cat];
+        img.onclick = () => openLightbox(shownSrcs, idx, cat);
         imgsWrap.appendChild(img);
       });
       const label = document.createElement('div');
@@ -762,6 +794,35 @@ function buildGallery(){
   }
 }
 window.addEventListener('DOMContentLoaded', buildGallery);
+
+// Lightbox
+let lightboxSrcs = [];
+let lightboxIndex = 0;
+function openLightbox(srcs, index, cat){
+  lightboxSrcs = srcs;
+  lightboxIndex = index;
+  updateLightboxImg();
+  document.getElementById('lightbox').classList.add('open');
+}
+function closeLightbox(){
+  document.getElementById('lightbox').classList.remove('open');
+}
+function navLightbox(dir){
+  lightboxIndex = (lightboxIndex + dir + lightboxSrcs.length) % lightboxSrcs.length;
+  updateLightboxImg();
+}
+function updateLightboxImg(){
+  document.getElementById('lightbox-img').src = lightboxSrcs[lightboxIndex];
+  const counter = document.getElementById('lightbox-counter');
+  counter.textContent = lightboxSrcs.length > 1 ? `${lightboxIndex+1} / ${lightboxSrcs.length}` : '';
+  document.querySelectorAll('.lightbox-nav').forEach(btn => btn.style.display = lightboxSrcs.length > 1 ? 'flex' : 'none');
+}
+document.addEventListener('keydown', (e) => {
+  if(!document.getElementById('lightbox').classList.contains('open')) return;
+  if(e.key === 'Escape') closeLightbox();
+  if(e.key === 'ArrowLeft') navLightbox(-1);
+  if(e.key === 'ArrowRight') navLightbox(1);
+});
 
 // Tarifas oficiales por sq ft (rango bajo-alto) según tabla Shiny Pro
 const SERVICE_RATES = {
