@@ -1,38 +1,52 @@
 SHINY PRO — GUÍA DE FOTOS
 ==========================
 
-Para agregar o cambiar una foto, sube un archivo con EXACTAMENTE
-este nombre a la carpeta "fotos" dentro de tu repo de GitHub.
-No necesitas tocar el código — el sitio se actualiza solo.
+Sube tus fotos a la raíz de tu repo en GitHub (junto a index.html),
+con EXACTAMENTE estos nombres. No necesitas tocar el código.
 
-fotos/logo.png              → ya está incluido (tu logo)
-
-fotos/hero.jpg               → foto principal arriba de la página (vertical, formato 4:5)
-fotos/equipo.jpg             → foto del equipo (sección "Por qué Shiny Pro")
+LOGO Y FOTOS FIJAS
+-------------------
+logo.png              → ya está incluido (tu logo)
+hero.jpg               → foto principal arriba de la página (vertical, formato 4:5)
+equipo.jpg             → foto del equipo (sección "Por qué Shiny Pro")
 
 Servicios (formato horizontal, se recortan automáticamente):
-fotos/servicio-residencial.jpg
-fotos/servicio-profunda.jpg
-fotos/servicio-mudanza.jpg
-fotos/servicio-comercial.jpg
-fotos/servicio-airbnb.jpg
-fotos/servicio-construccion.jpg
+servicio-residencial.jpg
+servicio-profunda.jpg
+servicio-mudanza.jpg
+servicio-comercial.jpg
+servicio-airbnb.jpg
+servicio-construccion.jpg
 
-Galería antes/después:
-fotos/antes-cocina.jpg       fotos/despues-cocina.jpg
-fotos/antes-bano.jpg         fotos/despues-bano.jpg
-fotos/antes-sala.jpg         fotos/despues-sala.jpg
+GALERÍA "NUESTRO TRABAJO" (sistema nuevo, flexible)
+------------------------------------------------------
+Ya NO son fotos "antes/después" fijas. Ahora subes las fotos que
+quieras de cada categoría, numeradas, y aparecen solas en el sitio.
+Las categorías vacías simplemente no se muestran.
 
-CÓMO SUBIR FOTOS EN GITHUB DESDE LA PC (más fácil que en celular):
-1. Entra a tu repositorio en GitHub, en la web
-2. Entra a la carpeta "fotos" (tócala en la lista de archivos)
-3. Arriba a la derecha, click en "Add file" → "Upload files"
-4. Arrastra tus fotos directo desde una carpeta de tu computadora
-   a la zona de subida (puedes soltar varias a la vez)
-5. Asegúrate de que cada una tenga EXACTAMENTE el nombre de la lista
-   de arriba antes de subir (renómbralas en tu PC si hace falta)
-6. Baja y confirma "Commit changes"
-7. El sitio se publica solo, en 1-2 minutos
+Categorías disponibles y cómo nombrarlas:
+  cocina-1.jpg, cocina-2.jpg, cocina-3.jpg...   → Cocina
+  bano-1.jpg, bano-2.jpg...                      → Baño
+  sala-1.jpg, sala-2.jpg...                      → Sala
+  alcoba-1.jpg, alcoba-2.jpg...                  → Alcoba
+  comedor-1.jpg, comedor-2.jpg...                → Comedor
+  patio-1.jpg, patio-2.jpg...                    → Patio
+  garage-1.jpg, garage-2.jpg...                  → Garage
 
-Mientras no subas una foto, esa sección muestra un recuadro con
-el texto indicando qué foto va ahí — no rompe el diseño.
+Puedes subir hasta 6 fotos por categoría (cocina-1 a cocina-6, etc.)
+Ejemplo: si subes "patio-1.jpg" y "patio-2.jpg" (una con grill,
+otra con piscina), ambas aparecen juntas bajo la etiqueta "Patio".
+
+IMPORTANTE: usa "bano" sin la ñ (no "baño") porque los nombres de
+archivo con acentos o eñes a veces dan problemas al subirlos.
+
+CÓMO SUBIR FOTOS EN GITHUB:
+1. Entra a tu repositorio en GitHub (a la raíz, donde está index.html)
+2. Toca "Add file" → "Upload files"
+3. Sube tu foto y ponle EXACTAMENTE el nombre de la lista de arriba
+   (si ya existe un archivo con ese nombre, lo reemplaza automáticamente)
+4. Confirma el cambio ("Commit changes")
+5. El sitio se publica solo, en 1-2 minutos
+
+Mientras no subas fotos, esas secciones muestran un recuadro o
+simplemente no aparecen — no rompe el diseño.

@@ -75,6 +75,13 @@
   .hero{ position:relative; padding:64px 0 64px; overflow:hidden;}
   .hero-grid{ display:grid; grid-template-columns:1.1fr 0.9fr; gap:48px; align-items:center;}
   @media(max-width:860px){ .hero-grid{ grid-template-columns:1fr;} }
+  .hero-copy{ position:relative; z-index:1;}
+  .hero-watermark{
+    position:absolute; top:-60px; left:-60px; width:460px; height:auto;
+    opacity:0.07; z-index:-1; pointer-events:none; user-select:none;
+    filter:grayscale(0.2);
+  }
+  @media(max-width:860px){ .hero-watermark{ width:320px; top:-30px; left:-30px;} }
   .hero-eyebrow{
     display:inline-flex; align-items:center; gap:8px;
     font-size:0.82rem; font-weight:600; color:var(--sage-deep);
@@ -157,11 +164,13 @@
   .gallery{ padding:72px 0;}
   .gallery-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:20px;}
   @media(max-width:860px){ .gallery-grid{ grid-template-columns:1fr;} }
-  .gallery-pair{ border-radius:18px; overflow:hidden; border:1px solid var(--line);}
-  .gallery-pair-imgs{ display:grid; grid-template-columns:1fr 1fr;}
-  .gallery-pair .photo-ph{ height:160px; border:none; border-radius:0;}
-  .gallery-pair-imgs > .photo-ph:first-child{ border-right:1px solid var(--line);}
-  .gallery-pair-label{ padding:12px 16px; font-size:0.85rem; font-weight:600; background:var(--cream-deep);}
+  .gallery-card{ border-radius:18px; overflow:hidden; border:1px solid var(--line); background:var(--cream);}
+  .gallery-card-imgs{ display:grid; grid-template-columns:1fr 1fr; gap:2px; background:var(--line);}
+  .gallery-card-imgs.single{ grid-template-columns:1fr;}
+  .gallery-card-imgs img{ width:100%; height:170px; object-fit:cover; display:block; background:var(--cream-deep);}
+  .gallery-card-label{ padding:12px 16px; font-size:0.9rem; font-weight:600;}
+  .gallery-empty{ text-align:center; padding:40px 20px; opacity:0.55; font-size:0.9rem; border:1.5px dashed var(--line); border-radius:16px;}
+  .gallery-empty.hidden{ display:none;}
 
   /* WHY */
   .why{ padding:72px 0; background:var(--cream-deep);}
@@ -304,7 +313,8 @@
 <section class="hero">
   <div class="wrap">
     <div class="hero-grid">
-      <div>
+      <div class="hero-copy">
+        <img src="logo.png" alt="" class="hero-watermark" onerror="this.style.display='none'">
         <div class="hero-eyebrow">Bradenton &amp; Sarasota, FL</div>
         <h1>
           <span class="wipe-wrap"><span data-i18n="hero.title">Tu espacio, nuestra pasión</span><span class="shine" data-i18n="hero.title">Tu espacio, nuestra pasión</span></span>
@@ -377,33 +387,15 @@
   <div class="wrap">
     <div class="section-head">
       <span class="eyebrow" data-i18n="gallery.eyebrow">Resultados reales</span>
-      <h2 data-i18n="gallery.title">Antes y después</h2>
+      <h2 data-i18n="gallery.title">Nuestro trabajo</h2>
     </div>
-    <div class="gallery-grid">
-      <div class="gallery-pair">
-        <div class="gallery-pair-imgs">
-          <div class="photo-ph"><img src="antes-cocina.jpg" alt="" onerror="this.style.display='none'"><span class="ph-label" data-i18n="ph.before">Antes</span></div>
-          <div class="photo-ph"><img src="despues-cocina.jpg" alt="" onerror="this.style.display='none'"><span class="ph-label" data-i18n="ph.after">Después</span></div>
-        </div>
-        <div class="gallery-pair-label" data-i18n="gallery.item1">Cocina — limpieza profunda</div>
-      </div>
-      <div class="gallery-pair">
-        <div class="gallery-pair-imgs">
-          <div class="photo-ph"><img src="antes-bano.jpg" alt="" onerror="this.style.display='none'"><span class="ph-label" data-i18n="ph.before">Antes</span></div>
-          <div class="photo-ph"><img src="despues-bano.jpg" alt="" onerror="this.style.display='none'"><span class="ph-label" data-i18n="ph.after">Después</span></div>
-        </div>
-        <div class="gallery-pair-label" data-i18n="gallery.item2">Baño — turnover Airbnb</div>
-      </div>
-      <div class="gallery-pair">
-        <div class="gallery-pair-imgs">
-          <div class="photo-ph"><img src="antes-sala.jpg" alt="" onerror="this.style.display='none'"><span class="ph-label" data-i18n="ph.before">Antes</span></div>
-          <div class="photo-ph"><img src="despues-sala.jpg" alt="" onerror="this.style.display='none'"><span class="ph-label" data-i18n="ph.after">Después</span></div>
-        </div>
-        <div class="gallery-pair-label" data-i18n="gallery.item3">Sala — post-construcción</div>
-      </div>
+    <div class="gallery-grid" id="gallery-grid">
+      <!-- Las categorías se generan automáticamente en JS según las fotos que existan -->
     </div>
+    <div class="gallery-empty" id="gallery-empty" data-i18n="gallery.empty">Pronto vas a ver fotos reales de nuestro trabajo aquí.</div>
   </div>
 </section>
+
 
 <section class="quote" id="cotizador">
   <div class="wrap">
@@ -596,8 +588,8 @@ const translations = {
     "s4.title":"Limpieza Comercial y de Oficinas", "s4.desc":"Espacios de trabajo limpios y presentables para tu equipo y clientes.",
     "s5.title":"Casas de Renta y Airbnb", "s5.desc":"Turnovers rápidos entre huéspedes, listos para tu próxima reserva.",
     "s6.title":"Limpieza Post-Construcción", "s6.desc":"Remoción de polvo fino y residuos tras una remodelación.",
-    "gallery.eyebrow":"Resultados reales", "gallery.title":"Antes y después",
-    "gallery.item1":"Cocina", "gallery.item2":"Baño", "gallery.item3":"Sala",
+    "gallery.eyebrow":"Resultados reales", "gallery.title":"Nuestro trabajo",
+    "gallery.empty":"Pronto vas a ver fotos reales de nuestro trabajo aquí.",
     "quote.eyebrow":"Estima tu precio", "quote.title":"Calcula tu cotización al instante",
     "quote.sqft":"Tamaño de la propiedad (pies cuadrados)", "quote.service":"Tipo de servicio",
     "quote.condition":"Estado de la propiedad", "quote.condition.normal":"Mantenimiento normal", "quote.condition.dirty":"Mugre acumulada (6+ meses sin limpieza profunda)",
@@ -645,8 +637,8 @@ const translations = {
     "s4.title":"Commercial & Office Cleaning", "s4.desc":"Clean, presentable workspaces for your team and clients.",
     "s5.title":"Vacation Rental & Airbnb Turnover", "s5.desc":"Fast turnovers between guests, ready for your next booking.",
     "s6.title":"Post-Construction Cleaning", "s6.desc":"Fine dust and debris removal after a remodel.",
-    "gallery.eyebrow":"Real results", "gallery.title":"Before & after",
-    "gallery.item1":"Kitchen", "gallery.item2":"Bathroom", "gallery.item3":"Living room",
+    "gallery.eyebrow":"Real results", "gallery.title":"Our work",
+    "gallery.empty":"You'll soon see real photos of our work here.",
     "quote.eyebrow":"Estimate your price", "quote.title":"Calculate your quote instantly",
     "quote.sqft":"Property size (square feet)", "quote.service":"Type of service",
     "quote.condition":"Property condition", "quote.condition.normal":"Regular maintenance", "quote.condition.dirty":"Heavy buildup (6+ months without deep cleaning)",
@@ -690,10 +682,85 @@ function setLang(lang){
     const key = el.getAttribute('data-i18n-ph');
     if(translations[lang][key]) el.placeholder = translations[lang][key];
   });
+  document.querySelectorAll('.gallery-card-label[data-cat]').forEach(el=>{
+    const cat = el.getAttribute('data-cat');
+    if(galleryLabels[lang][cat]) el.textContent = galleryLabels[lang][cat];
+  });
+  document.querySelectorAll('.gallery-card-imgs img').forEach((el,i)=>{
+    const cat = el.closest('.gallery-card').querySelector('[data-cat]').getAttribute('data-cat');
+    el.alt = galleryLabels[lang][cat];
+  });
 }
 function toggleFaq(el){
   el.parentElement.classList.toggle('open');
 }
+
+// Galería dinámica: revisa qué fotos existen para cada categoría (hasta 6 por categoría)
+// y arma las tarjetas solo con lo que el usuario haya subido.
+const GALLERY_CATEGORIES = ['cocina','bano','sala','alcoba','comedor','patio','garage'];
+const GALLERY_MAX_PER_CATEGORY = 6;
+const galleryLabels = {
+  es:{cocina:'Cocina', bano:'Baño', sala:'Sala', alcoba:'Alcoba', comedor:'Comedor', patio:'Patio', garage:'Garage'},
+  en:{cocina:'Kitchen', bano:'Bathroom', sala:'Living Room', alcoba:'Bedroom', comedor:'Dining Room', patio:'Patio', garage:'Garage'}
+};
+
+function buildGallery(){
+  const grid = document.getElementById('gallery-grid');
+  const emptyMsg = document.getElementById('gallery-empty');
+  grid.innerHTML = '';
+  let foundAny = false;
+  let pending = GALLERY_CATEGORIES.length;
+
+  GALLERY_CATEGORIES.forEach(cat => {
+    const loadedSrcs = [];
+    let checksLeft = GALLERY_MAX_PER_CATEGORY;
+
+    for(let i=1; i<=GALLERY_MAX_PER_CATEGORY; i++){
+      const src = `${cat}-${i}.jpg`;
+      const tester = new Image();
+      tester.onload = () => {
+        loadedSrcs.push(src);
+        checksLeft--;
+        if(checksLeft === 0) finalizeCategory(cat, loadedSrcs);
+      };
+      tester.onerror = () => {
+        checksLeft--;
+        if(checksLeft === 0) finalizeCategory(cat, loadedSrcs);
+      };
+      tester.src = src;
+    }
+  });
+
+  function finalizeCategory(cat, srcs){
+    pending--;
+    if(srcs.length > 0){
+      foundAny = true;
+      // Order by filename number
+      srcs.sort();
+      const card = document.createElement('div');
+      card.className = 'gallery-card';
+      const imgsWrap = document.createElement('div');
+      imgsWrap.className = 'gallery-card-imgs' + (srcs.length === 1 ? ' single' : '');
+      srcs.slice(0,4).forEach(s => {
+        const img = document.createElement('img');
+        img.src = s;
+        img.alt = galleryLabels[currentLang][cat];
+        imgsWrap.appendChild(img);
+      });
+      const label = document.createElement('div');
+      label.className = 'gallery-card-label';
+      label.setAttribute('data-cat', cat);
+      label.textContent = galleryLabels[currentLang][cat];
+      card.appendChild(imgsWrap);
+      card.appendChild(label);
+      grid.appendChild(card);
+    }
+    if(pending === 0){
+      emptyMsg.classList.toggle('hidden', foundAny);
+    }
+  }
+}
+window.addEventListener('DOMContentLoaded', buildGallery);
 
 // Tarifas oficiales por sq ft (rango bajo-alto) según tabla Shiny Pro
 const SERVICE_RATES = {
